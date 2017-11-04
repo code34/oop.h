@@ -112,15 +112,14 @@
 //////////////////////////////////////////////////////////////
 //  Group: Internal Macros
 //////////////////////////////////////////////////////////////
-
 #define SAFE_VAR(var) (if (isNil {var}) then {nil} else {var})
-
+#define DEBUG(sharp,name) sharp##line 0 name
 #define ENSURE_INDEX(idx,dft) if ((count _this) <= idx) then {_this set [idx,dft]}
-#define CHECK_THIS if (isNil "_this") then {_this = []} else {if (typeName(_this) != "ARRAY") then {_this = [_this]}}
+#define CHECK_THIS if (isNil "_this") then {_this = []} else {if !(_this isEqualType []) then {_this = [_this]}}
 
 #define CHECK_ACCESS(lvl) case ((_access >= lvl) &&
-#define CHECK_TYPE(typeStr) ((_argType == toUpper(typeStr)) || {toUpper(typeStr) == "ANY"})
-#define CHECK_NIL (_argType == "")
+#define CHECK_TYPE(typeStr) ((_argType isEqualTo toUpper(typeStr)) || {toUpper(typeStr) isEqualTo "ANY"})
+#define CHECK_NIL (_argType isEqualTo "")
 #define CHECK_MEMBER(name) (_member == name)
 #define CHECK_VAR(typeStr,varName) {CHECK_MEMBER(varName)} && {CHECK_TYPE(typeStr) || CHECK_NIL}
 
@@ -145,15 +144,14 @@
 	NAMESPACE setVariable [className, { \
 	CHECK_THIS; \
 	if ((count _this) > 0) then { \
-		private ["_class"]; \
-		_class = className; \
+		private _class = className; \
 		if (isNil {_this select 0}) then {_this set [0,_class]}; \
 		switch (_this select 0) do { \
 		case "new": { \
-			private ["_code"]; \
 			NAMESPACE setVariable [AUTO_INC_VAR(className), (GET_AUTO_INC(className) + 1)]; \
-			_code = compile format ['CHECK_THIS; ENSURE_INDEX(1,nil); (["%1", (_this select 0), (_this select 1), 0]) call GETCLASS(className);', (className + "_" + str(GET_AUTO_INC(className)))]; \
+			private _code = compile format ['CHECK_THIS; ENSURE_INDEX(1,nil); (["%1", (_this select 0), (_this select 1), 0]) call GETCLASS(className);', (className + "_" + str(GET_AUTO_INC(className)))]; \
 			ENSURE_INDEX(1,nil); \
+			NAMESPACE setVariable [format['%1_%2_code', className, GET_AUTO_INC(className)], _code];\
 			[CONSTRUCTOR_METHOD, (_this select 1)] call _code; \
 			_code; \
 		}; \
@@ -162,12 +160,12 @@
 			[DECONSTRUCTOR_METHOD, (_this select 2)] call (_this select 1); \
 		}; \
 		default { \
-			private ["_classID", "_member","_argType","_access","_default"]; \
-			_classID = _this select 0; \
-			_member = _this select 1; \
-			_access = DEFAULT_PARAM(3,0); \
+			private _classID = _this select 0; \
+			private _member = _this select 1; \
+			private _access = DEFAULT_PARAM(3,0); \
 			_this = DEFAULT_PARAM(2,nil); \
-			_argType = if (isNil "_this") then {""} else {typeName _this}; \
+			private _argType = if (isNil "_this") then {""} else {typeName _this}; \
+			private _self = NAMESPACE getvariable format["%1_code", _classID]; \
 			switch (true) do {
 			
 #define FINALIZE_CLASS };};};};}]
