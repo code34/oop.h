@@ -83,6 +83,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			[CONSTRUCTOR_METHOD, (_this select 1)] call _code; \
 			_code; \
 		}; \
+		case "static":{ \
+			private _code = compile format ['CHECK_THIS; ENSURE_INDEX(1,nil); (["%1", (_this select 0), (_this select 1), 0]) call GETCLASS(className);', className]; \
+			[(_this select 1) select 0, (_this select 1) select 1] call _code; \
+		}; \
 		case "delete": { \
 			if ((count _this) == 2) then {_this set [2,nil]}; \
 			[DECONSTRUCTOR_METHOD, (_this select 2)] call (_this select 1); \
