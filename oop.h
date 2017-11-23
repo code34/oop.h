@@ -220,6 +220,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #define MEMBER(memberStr,args) CALLCLASS(_class,memberStr,args,2)
 
+#define NEW(class, args) ["new", args] call class
+#define DELETE(class, instance) ["delete", instance] call class
+#define STATIC_FUNC(class, fncName, args) call ["static", [fncName, args]] call class
+
 /*
 	Macro: FUNC_GETVAR(varName)
 	Returns a variable of the current class, used as a function.
