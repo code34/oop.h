@@ -220,8 +220,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #define MEMBER(memberStr,args) CALLCLASS(_class,memberStr,args,2)
 
+/*
+	Macro:  NEW(class, args)
+	Instanciate a new object of class with args 
+*/
 #define NEW(class, args) ["new", args] call class
+
+/*
+	Macro: DELETE(class, instance)
+	Delete the instance of object of class
+*/
 #define DELETE(class, instance) ["delete", instance] call class
+
+/*
+	Macro: STATIC_FUNC(class, fncName, args)
+	Call a static function name of class with args
+*/
 #define STATIC_FUNC(class, fncName, args) call ["static", [fncName, args]] call class
 
 /*
