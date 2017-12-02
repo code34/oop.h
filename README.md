@@ -4,11 +4,11 @@ OOP is a macro langage fully compatible with Arma3 engine wich transform SQF in 
 
 ## Getting Started
 
-First, take a look at the [Wiki](https://github.com/code34/oop.h/wiki/) where you will find all informations concerning usage of oop.
+First, take a look at the [Wiki](https://github.com/code34/oop.h/wiki/) where you will find all informations concerning usage of OOP.
 
 ## Libraries
 
-You can also retrive all current [libraries](https://github.com/code34/oop.h/wiki/9.-OOP-LIBRARY)
+You can also retrieve a set of existing [OOP class](https://github.com/code34/oop.h/wiki/9.-OOP-LIBRARY)
 
 ## Sublime
 
