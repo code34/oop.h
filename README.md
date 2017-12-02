@@ -1,6 +1,6 @@
 # OOP
 
-OOP is a macro langage wich transform SQF in SQF++
+OOP is a macro langage fully compatible with Arma3 engine wich transform SQF in SQF++. 
 
 ## Getting Started
 
@@ -13,3 +13,8 @@ You can also retrive all current [libraries](https://github.com/code34/oop.h/wik
 ## Sublime
 
 A [sublime addon](https://github.com/minipopov/Sublime_Text_OOP) has been developed to facilitate the development 
+
+## Licence
+
+This software is released under license GPL v3
+
