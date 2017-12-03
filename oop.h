@@ -215,7 +215,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	Macro: STATIC_FUNCTION(class, fncName, args)
 	Call a static function name of class with args
 */
-#define STATIC_FUNCTION(instance, fncName, args) call ["static", [fncName, args]] call instance
+#define STATIC_FUNCTION(instance, fncName, args) ["static", [fncName, args]] call instance
 
 /*
 	Macro: FUNC_GETVAR(varName)
