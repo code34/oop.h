@@ -56,9 +56,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define GETCLASS(className) (NAMESPACE getVariable [className, {nil}])
 #define CALLCLASS(className,member,args,access) ([_classID, member, SAFE_VAR(args), access] call GETCLASS(className))
 
-#define VAR_DFT_FUNC(varName) {if (isNil "_this") then { if(_argType isEqualTo "CONTROL" || _argType isEqualTo "DISPLAY") then {UINAMESPACE getVariable [GETVAR(varName), nil] }else{ NAMESPACE getVariable [GETVAR(varName), nil]}; } else { if(_argType isEqualTo "CONTROL" || _argType isEqualTo "DISPLAY") then {UINAMESPACE setVariable [GETVAR(varName), _this]}else{NAMESPACE setVariable [GETVAR(varName), _this]};};}
-#define SVAR_DFT_FUNC(varName) {if (isNil "_this") then { if(_argType isEqualTo "CONTROL" || _argType isEqualTo "DISPLAY") then {UINAMESPACE getVariable [GETSVAR(varName), nil] }else{ NAMESPACE getVariable [GETSVAR(varName), nil]}; } else { if(_argType isEqualTo "CONTROL" || _argType isEqualTo "DISPLAY" ) then {UINAMESPACE setVariable [GETSVAR(varName), _this]}else{NAMESPACE setVariable [GETSVAR(varName), _this]};};}
-#define VAR_DELETE(varName) ( if(_argType isEqualTo "CONTROL" || _argType isEqualTo "DISPLAY") then {UINAMESPACE setVariable [GETVAR(varName), nil] }else{ NAMESPACE setVariable [GETVAR(varName), nil]};)
+#define VAR_DFT_FUNC(varName) {if (isNil "_this") then { if(_argType isEqualTo "CONTROL" || {_argType isEqualTo "DISPLAY"}) then { UINAMESPACE getVariable [GETVAR(varName), nil] }else{ NAMESPACE getVariable [GETVAR(varName), nil]}; } else { if(_argType isEqualTo "CONTROL" || {_argType isEqualTo "DISPLAY"}) then {UINAMESPACE setVariable [GETVAR(varName), _this]}else{NAMESPACE setVariable [GETVAR(varName), _this]};};}
+#define SVAR_DFT_FUNC(varName) {if (isNil "_this") then { if(_argType isEqualTo "CONTROL" || {_argType isEqualTo "DISPLAY"}) then {UINAMESPACE getVariable [GETSVAR(varName), nil] }else{ NAMESPACE getVariable [GETSVAR(varName), nil]}; } else { if(_argType isEqualTo "CONTROL" || {_argType isEqualTo "DISPLAY"}) then {UINAMESPACE setVariable [GETSVAR(varName), _this]}else{NAMESPACE setVariable [GETSVAR(varName), _this]};};}
+#define VAR_DELETE(varName) ( if(_argType isEqualTo "CONTROL" || {_argType isEqualTo "DISPLAY"}) then {UINAMESPACE setVariable [GETVAR(varName), nil] }else{ NAMESPACE setVariable [GETVAR(varName), nil]};)
 
 #define MOD_VAR(varName,mod) MEMBER(varName,MEMBER(varName,nil)+mod); 
 #define INC_VAR(varName) MOD_VAR(varName,1)
