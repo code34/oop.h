@@ -56,9 +56,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define GETCLASS(className) (NAMESPACE getVariable [className, {nil}])
 #define CALLCLASS(className,member,args,access) ([_classID, member, SAFE_VAR(args), access] call GETCLASS(className))
 
-#define VAR_DFT_FUNC(varName) {if (isNil "_this") then { if(_argType isEqualTo "CONTROL" || {_argType isEqualTo "DISPLAY"}) then { UINAMESPACE getVariable [GETVAR(varName), nil] }else{ NAMESPACE getVariable [GETVAR(varName), nil]}; } else { if(_argType isEqualTo "CONTROL" || {_argType isEqualTo "DISPLAY"}) then {UINAMESPACE setVariable [GETVAR(varName), _this]}else{NAMESPACE setVariable [GETVAR(varName), _this]};};}
-#define SVAR_DFT_FUNC(varName) {if (isNil "_this") then { if(_argType isEqualTo "CONTROL" || {_argType isEqualTo "DISPLAY"}) then {UINAMESPACE getVariable [GETSVAR(varName), nil] }else{ NAMESPACE getVariable [GETSVAR(varName), nil]}; } else { if(_argType isEqualTo "CONTROL" || {_argType isEqualTo "DISPLAY"}) then {UINAMESPACE setVariable [GETSVAR(varName), _this]}else{NAMESPACE setVariable [GETSVAR(varName), _this]};};}
-#define VAR_DELETE(varName) ( if(_argType isEqualTo "CONTROL" || {_argType isEqualTo "DISPLAY"}) then {UINAMESPACE setVariable [GETVAR(varName), nil] }else{ NAMESPACE setVariable [GETVAR(varName), nil]};)
+#define VAR_DFT_FUNC(varName) {if (isNil "_this") then {NAMESPACE getVariable [GETVAR(varName), nil]} else {NAMESPACE setVariable [GETVAR(varName), _this]};}
+#define UIVAR_DFT_FUNC(varName) {if (isNil "_this") then {UINAMESPACE getVariable [GETVAR(varName), nil]} else {UINAMESPACE setVariable [GETVAR(varName), _this]};}
+
+#define SVAR_DFT_FUNC(varName) {if (isNil "_this") then {NAMESPACE getVariable [GETSVAR(varName), nil]} else {NAMESPACE setVariable [GETSVAR(varName), _this]};}
+#define SUIVAR_DFT_FUNC(varName) {if (isNil "_this") then {UINAMESPACE getVariable [GETSVAR(varName), nil]} else {UINAMESPACE setVariable [GETSVAR(varName), _this]};}
+
+#define VAR_DELETE(varName) (NAMESPACE setVariable [GETVAR(varName), nil])
+#define UIVAR_DELETE(varName) (UINAMESPACE setVariable [GETVAR(varName), nil])
 
 #define MOD_VAR(varName,mod) MEMBER(varName,MEMBER(varName,nil)+mod); 
 #define INC_VAR(varName) MOD_VAR(varName,1)
@@ -81,6 +86,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef NAMESPACE
 #define NAMESPACE missionNamespace
 #endif
+
 #ifndef UINAMESPACE
 #define UINAMESPACE uiNamespace
 #endif
@@ -161,7 +167,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<FUNCTION>
 */
 #define VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)): VAR_DFT_FUNC(varName)
+#define UI_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)): UIVAR_DFT_FUNC(varName)
 #define STATIC_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)): SVAR_DFT_FUNC(varName)
+#define STATIC_UI_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)): SUIVAR_DFT_FUNC(varName)
 
 /*
 	Macro: DELETE_VARIABLE(varName)
@@ -175,6 +183,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<VARIABLE>
 */
 #define DELETE_VARIABLE(varName) VAR_DELETE(varName)
+#define DELETE_UI_VARIABLE(varName) UIVAR_DELETE(varName)
 
 /*
 	Macro: MEMBER(memberStr,args)
