@@ -257,7 +257,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		}; \
 		case "protected":{ \
 			private _array = toArray str (missionNamespace getVariable className); \
-    			_array deleteAt (count _arr - 1); \
+    			_array deleteAt (count _array - 1); \
     			_array deleteAt (0); \
     			missionNamespace setVariable[className, (compileFinal toString _array)]; \
 		}; \
