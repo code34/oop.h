@@ -255,6 +255,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			private _code = compile format ['CHECK_THIS; ENSURE_INDEX(1,nil); (["%1", (_this select 0), (_this select 1), 0]) call GETCLASS(className);', className]; \
 			[(_this select 1) select 0, (_this select 1) select 1] call _code; \
 		}; \
+		case "protected":{ \
+			private _array = toArray str (missionNamespace getVariable className); \
+    			_array deleteAt (count _arr - 1); \
+    			_array deleteAt (0); \
+    			missionNamespace setVariable[className, (compileFinal toString _array)]; \
+		}; \
 		case "delete": { \
 			if ((count _this) == 2) then {_this set [2,nil]}; \
 			[DECONSTRUCTOR_METHOD, (_this select 2)] call (_this select 1); \
