@@ -55,6 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define GETSVAR(var) (_class + "_" + var)
 #define GETCLASS(className) (NAMESPACE getVariable [className, {nil}])
 #define CALLCLASS(className,member,args,access) ([_classID, member, SAFE_VAR(args), access] call GETCLASS(className))
+#define SPAWNCLASS(className,member,args,access) ([_classID, member, SAFE_VAR(args), access] spawn GETCLASS(className))
 
 #define VAR_DFT_FUNC(varName) {if (isNil "_this") then {NAMESPACE getVariable [GETVAR(varName), nil]} else {NAMESPACE setVariable [GETVAR(varName), _this]};}
 #define UIVAR_DFT_FUNC(varName) {if (isNil "_this") then {UINAMESPACE getVariable [GETVAR(varName), nil]} else {UINAMESPACE setVariable [GETVAR(varName), _this]};}
@@ -104,7 +105,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	See Also:
 		<CLASSEXTENDS>
 */
-#define CLASS(className) INSTANTIATE_CLASS(className) default {nil};
+#define CLASS(className) INSTANTIATE_CLASS(className, "No Parent") default {nil};
 
 /*
 	Macro: CLASS_EXTENDS(childClassName,parentClassName)
@@ -120,7 +121,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	See Also:
 		<CLASS>
 */
-#define CLASS_EXTENDS(childClassName,parentClassName) INSTANTIATE_CLASS(childClassName) default {CALLCLASS(parentClassName,_member,_this,1);};
+#define CLASS_EXTENDS(childClassName,parentClassName) INSTANTIATE_CLASS(childClassName, parentClassName) default {CALLCLASS(parentClassName,_member,_this,1);};
 
 /*
 	Defines:
@@ -198,6 +199,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		args - The arguments to be passed to the member function or variable [any].
 */
 #define MEMBER(memberStr,args) CALLCLASS(_class,memberStr,args,2)
+#define SUPER(memberStr,args) CALLCLASS(_parentClass,memberStr,args,2)
 
 /*
 	Macro:  NEW(class, args)
@@ -235,11 +237,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #define ENDCLASS FINALIZE_CLASS
 
-#define INSTANTIATE_CLASS(className) \
+#define INSTANTIATE_CLASS(className, parentClassName) \
 	NAMESPACE setVariable [className, { \
 	CHECK_THIS; \
 	if ((count _this) > 0) then { \
 		private _class = className; \
+		private _parentClass = parentClassName; \
 		if (isNil {_this select 0}) then {_this set [0,_class]}; \
 		switch (_this select 0) do { \
 		case "new": { \
