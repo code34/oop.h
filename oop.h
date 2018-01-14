@@ -106,7 +106,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	See Also:
 		<CLASSEXTENDS>
 */
-#define CLASS(className) INSTANTIATE_CLASS(className, "No Parent") default {nil};
+#define CLASS(className) INSTANTIATE_CLASS(className, "No Parent") default { throw ["UNDEFINEMEMBER", _class, _member, _argType]; };
 
 /*
 	Macro: CLASS_EXTENDS(childClassName,parentClassName)
@@ -253,7 +253,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			private _code = compile format ['CHECK_THIS; ENSURE_INDEX(1,nil); (["%1", (_this select 0), (_this select 1), 0]) call GETCLASS(className);', (className + "_" + str(GET_AUTO_INC(className)))]; \
 			ENSURE_INDEX(1,nil); \
 			private _classID = className + "_" + str(GET_AUTO_INC(className)); \
-			[_classID, "this", SAFE_VAR(_code), 2] call GETCLASS(className); \
+			NAMESPACE setVariable [format ['%1_this', _classID], _code]; \
 			[CONSTRUCTOR_METHOD, (_this select 1)] call _code; \
 			_code; \
 		}; \
