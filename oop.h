@@ -310,7 +310,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define FINALIZE_CLASS };};};};} catch { \
 	switch (_exception select 0) do { \
 		case ERR_UNDEFMEMBER : { \
-			hint format ["ERROR Class: %1 %2 Member: %3 is undefine", _exception select 1, endl, _exception select 2]; \
+			hint format ['Error Undef function: %1("%3","%2")', _exception select 1, _exception select 2, typeName(_exception select 3)]; \
 		}; \
 	}; \
 }}] 
