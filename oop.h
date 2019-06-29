@@ -45,18 +45,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define ENSURE_INDEX(idx,dft) if ((count _this) <= idx) then {_this set [idx,dft]}
 #define CHECK_THIS if (isNil "_this") then {_this = []} else {if !(_this isEqualType []) then {_this = [_this]}}
 
-#define CHECK_ACCESS(lvl) case ((_access >= lvl) &&
-#define CHECK_TYPE(typeStr) ((_argType isEqualTo toUpper(typeStr)) || {toUpper(typeStr) isEqualTo "ANY"})
-#define CHECK_NIL (_argType isEqualTo "")
-#define CHECK_MEMBER(name) (_member == name)
+#define CHECK_ACCESS(lvl) case ((VARNAMESPACE(_access) >= lvl) &&
+#define CHECK_TYPE(typeStr) ((VARNAMESPACE(_argType) isEqualTo toUpper(typeStr)) || {toUpper(typeStr) isEqualTo "ANY"})
+#define CHECK_NIL (VARNAMESPACE(_argType) isEqualTo "")
+#define CHECK_MEMBER(name) (VARNAMESPACE(_member) == name)
 #define CHECK_VAR(typeStr,varName) {CHECK_MEMBER(varName)} && {CHECK_TYPE(typeStr) || CHECK_NIL}
 
-#define GETVAR(var) (_classID + "_" + var)
-#define GETSVAR(var) (_class + "_" + var)
+#define GETVAR(var) (VARNAMESPACE(_classid) + "_" + var)
+#define GETSVAR(var) (VARNAMESPACE(_class) + "_" + var)
 #define GETCLASS(className) (NAMESPACE getVariable [className, {nil}])
-#define CALLCLASS(className,member,args,access) (if(isNil "_oopOriginCall")then{ [_classID, member, SAFE_VAR(args),access] call GETCLASS(className) }else{ [_classID, member, SAFE_VAR(args),access] call GETCLASS(_oopOriginCall)})
-#define SPAWNCLASS(className,member,args,access) (if(isNil "_oopOriginCall")then{ [_classID, member, SAFE_VAR(args),access] spawn GETCLASS(className) }else{ [_classID, member, SAFE_VAR(args),access] spawn GETCLASS(_oopOriginCall)})
-#define CALLCLASS_FROMCHILD(className,member,args,access,origin) ([_classID, member, SAFE_VAR(args), access, origin] call GETCLASS(className))
+#define CALLCLASS(className,member,args,access) (if(isNil "_oopOriginCall")then{ [VARNAMESPACE(_classid), member, SAFE_VAR(args),access] call GETCLASS(className) }else{ [VARNAMESPACE(_classid), member, SAFE_VAR(args),access] call GETCLASS(_oopOriginCall)})
+#define SPAWNCLASS(className,member,args,access) (if(isNil "_oopOriginCall")then{ [VARNAMESPACE(_classid), member, SAFE_VAR(args),access] spawn GETCLASS(className) }else{ [VARNAMESPACE(_classid), member, SAFE_VAR(args),access] spawn GETCLASS(_oopOriginCall)})
+#define CALLCLASS_FROMCHILD(className,member,args,access,origin) ([VARNAMESPACE(_classid), member, SAFE_VAR(args), access, origin] call GETCLASS(className))
 
 #define VAR_DFT_FUNC(varName) {if (isNil "_this") then {NAMESPACE getVariable [GETVAR(varName), nil]} else {NAMESPACE setVariable [GETVAR(varName), _this]};}
 #define UIVAR_DFT_FUNC(varName) {if (isNil "_this") then {UINAMESPACE getVariable [GETVAR(varName), nil]} else {UINAMESPACE setVariable [GETVAR(varName), _this]};}
@@ -116,7 +116,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	See Also:
 		<CLASSEXTENDS>
 */
-#define CLASS(className) INSTANTIATE_CLASS(className, "No Parent") default { throw [ERR_UNDEFMEMBER, _class, _member, _argType]; };
+#define CLASS(className) INSTANTIATE_CLASS(className, "No Parent") default { throw [ERR_UNDEFMEMBER, VARNAMESPACE(_class), VARNAMESPACE(_member), VARNAMESPACE(_argType)]; };
 
 /*
 	Macro: CLASS_EXTENDS(childClassName,parentClassName)
@@ -132,7 +132,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	See Also:
 		<CLASS>
 */
-#define CLASS_EXTENDS(childClassName,parentClassName) INSTANTIATE_CLASS(childClassName, parentClassName) default { if(isNil "_oopOriginCall")then{CALLCLASS_FROMCHILD(parentClassName,_member,_this,1, childClassName);}else{CALLCLASS_FROMCHILD(parentClassName,_member,_this,1, _oopOriginCall);}; };
+#define CLASS_EXTENDS(childClassName,parentClassName) INSTANTIATE_CLASS(childClassName, parentClassName) default { if(isNil "_oopOriginCall")then{CALLCLASS_FROMCHILD(parentClassName,VARNAMESPACE(_member),_this,1, childClassName);}else{CALLCLASS_FROMCHILD(parentClassName,VARNAMESPACE(_member),_this,1, _oopOriginCall);}; };
 
 /*
 	Defines:
@@ -218,8 +218,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		memberStr - The name of the member function or variable [string].
 		args - The arguments to be passed to the member function or variable [any].
 */
-#define MEMBER(memberStr,args) CALLCLASS(_class,memberStr,args,2)
-#define SPAWN_MEMBER(memberStr,args) SPAWNCLASS(_class,memberStr,args,2)
+#define MEMBER(memberStr,args) CALLCLASS(VARNAMESPACE(_class),memberStr,args,2)
+#define SPAWN_MEMBER(memberStr,args) SPAWNCLASS(VARNAMESPACE(_class),memberStr,args,2)
 
 /*
 	Macro: SUPER(memberStr,args)
@@ -229,7 +229,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		memberStr - The name of the parent mumber function
 		args - The arguments to be passed to the member function or variable [any].
 */
-#define SUPER(memberStr,args) CALLCLASS_FROMCHILD(_parentClass,memberStr,args,1, _class)
+#define SUPER(memberStr,args) CALLCLASS_FROMCHILD(VARNAMESPACE(_parentClass),memberStr,args,1, VARNAMESPACE(_class))
 
 /*
 	Macro:  NEW(class, args)
@@ -262,6 +262,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define FUNC_GETVAR(varName) {MEMBER(varName,nil);}
 
 /*
+	Define: VAR NAMESPACE
+	private var name of OOP
+*/
+#define VARNAMESPACE(varName) _oopsnamespace##varName
+
+/*
 	Define: ENDCLASS
 	Ends a class's initializaton and finalizes SQF output.
 */
@@ -271,40 +277,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	NAMESPACE setVariable [className, { try { \
 	CHECK_THIS; \
 	if ((count _this) > 0) then { \
-		private _class = className; \
-		private _parentClass = parentClassName; \
-		if (isNil {_this select 0}) then {_this set [0,_class]}; \
+		private VARNAMESPACE(_class) = className; \
+		private VARNAMESPACE(_parentClass) = parentClassName; \
+		if (isNil {_this select 0}) then {_this set [0,VARNAMESPACE(_class)]}; \
 		switch (_this select 0) do { \
 		case "new": { \
 			NAMESPACE setVariable [AUTO_INC_VAR(className), (GET_AUTO_INC(className) + 1)]; \
-			private _code = compile format ['CHECK_THIS; ENSURE_INDEX(1,nil); (["%1", (_this select 0), (_this select 1), 0]) call GETCLASS(className);', (className + "_" + str(GET_AUTO_INC(className)))]; \
+			private VARNAMESPACE(_code) = compile format ['CHECK_THIS; ENSURE_INDEX(1,nil); (["%1", (_this select 0), (_this select 1), 0]) call GETCLASS(className);', (className + "_" + str(GET_AUTO_INC(className)))]; \
 			ENSURE_INDEX(1,nil); \
-			private _classID = className + "_" + str(GET_AUTO_INC(className)); \
-			NAMESPACE setVariable [format ['%1_this', _classID], _code]; \
-			[CONSTRUCTOR_METHOD, (_this select 1)] call _code; \
-			_code; \
+			private VARNAMESPACE(_classid) = className + "_" + str(GET_AUTO_INC(className)); \
+			NAMESPACE setVariable [format ['%1_this', VARNAMESPACE(_classid)], VARNAMESPACE(_code)]; \
+			[CONSTRUCTOR_METHOD, (_this select 1)] call VARNAMESPACE(_code); \
+			VARNAMESPACE(_code); \
 		}; \
 		case "static":{ \
-			private _code = compile format ['CHECK_THIS; ENSURE_INDEX(1,nil); (["%1", (_this select 0), (_this select 1), 0]) call GETCLASS(className);', className]; \
-			[(_this select 1) select 0, (_this select 1) select 1] call _code; \
+			private VARNAMESPACE(_code) = compile format ['CHECK_THIS; ENSURE_INDEX(1,nil); (["%1", (_this select 0), (_this select 1), 0]) call GETCLASS(className);', className]; \
+			[(_this select 1) select 0, (_this select 1) select 1] call VARNAMESPACE(_code); \
 		}; \
 		case "protected":{ \
-			private _array = toArray str (missionNamespace getVariable className); \
-    			_array deleteAt (count _array - 1); \
-    			_array deleteAt (0); \
-    			missionNamespace setVariable[className, (compileFinal toString _array)]; \
+			private VARNAMESPACE(_array) = toArray str (missionNamespace getVariable className); \
+    			VARNAMESPACE(_array) deleteAt (count VARNAMESPACE(_array) - 1); \
+    			VARNAMESPACE(_array) deleteAt (0); \
+    			missionNamespace setVariable[className, (compileFinal toString VARNAMESPACE(_array))]; \
 		}; \
 		case "delete": { \
 			if ((count _this) == 2) then {_this set [2,nil]}; \
 			[DECONSTRUCTOR_METHOD, (_this select 2)] call (_this select 1); \
 		}; \
 		default { \
-			private _classID = _this select 0; \
-			private _member = _this select 1; \
-			private _access = DEFAULT_PARAM(3,0); \
+			private VARNAMESPACE(_classid) = _this select 0; \
+			private VARNAMESPACE(_member) = _this select 1; \
+			private VARNAMESPACE(_access) = DEFAULT_PARAM(3,0); \
 			private _oopOriginCall = DEFAULT_PARAM(4,nil); \
 			_this = DEFAULT_PARAM(2,nil); \
-			private _argType = if (isNil "_this") then {""} else {typeName _this}; \
+			private VARNAMESPACE(_argType) = if (isNil "_this") then {""} else {typeName _this}; \
 			switch (true) do { \
 			
 #define FINALIZE_CLASS };};};};} catch { \
